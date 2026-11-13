@@ -49,7 +49,7 @@
   .syncline.ok { color: var(--green); background: var(--green-soft); border-color: #cfe3da; }
   .syncline.warn { color: var(--amber); background: var(--amber-soft); border-color: #e6d9bd; }
 
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0 14px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 16px 0 14px; }
   .stat {
     background: var(--card); border: 1px solid var(--line); border-radius: 13px;
     padding: 12px 13px; box-shadow: var(--shadow);
@@ -114,12 +114,14 @@
   .badge.type { background: var(--blue-soft); color: var(--blue); }
   .badge.sub { background: var(--green-soft); color: var(--green); }
   .badge.demo { background: var(--amber-soft); color: var(--amber); }
+  .badge.new { background: #e8eef7; color: #33507a; }
   .q { margin: 7px 0 9px; font-size: 16.5px; font-weight: 600; line-height: 1.55; word-break: break-word; }
   .answers { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
   .ans { display: flex; align-items: baseline; gap: 6px; border-radius: 9px; padding: 5px 10px; font-size: 13.5px; }
   .ans label { font-size: 11px; letter-spacing: .5px; }
   .ans.wrong { background: var(--red-soft); color: #8f3a29; }
   .ans.right { background: var(--green-soft); color: #245a4b; }
+  .ans.new { background: #e8eef7; color: #33507a; }
   .ans b { font-weight: 600; }
   .reason { margin: 0 0 10px; font-size: 13px; color: #6b655a; }
   .reason::before { content: "错因 · "; color: var(--muted); }
@@ -160,7 +162,8 @@
   table.log tr:last-child td { border-bottom: 0; }
   table.log a { color: var(--blue); text-decoration: none; }
   .no-practice { color: var(--muted); font-size: 12.5px; margin: 0; }
-  .fl-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .fl-row { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .pending { margin: -4px 0 14px; font-size: 12.5px; color: var(--amber); }
   .action {
     border: 0; background: var(--green); color: #fff; border-radius: 999px;
     padding: 9px 18px; font: inherit; font-size: 13.5px; cursor: pointer;
@@ -168,6 +171,8 @@
   }
   .action:hover { filter: brightness(1.06); }
   .action:disabled { opacity: .55; filter: none; cursor: default; }
+  .action.ghost { background: #fff; color: var(--green); border: 1px solid #cddfd7; box-shadow: none; }
+  .action.ghost:hover { background: var(--green-soft); filter: none; }
   .top { padding: 9px 16px; font-size: 13.5px; white-space: nowrap; }
 
   .empty {
@@ -191,6 +196,32 @@
     position: absolute; top: -14px; right: -14px; width: 34px; height: 34px; border-radius: 50%;
     border: 0; background: #fff; color: #444; font-size: 18px; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.25);
   }
+
+  .picker {
+    background: var(--card); color: var(--ink); border-radius: 16px; box-shadow: 0 24px 70px rgba(0,0,0,.35);
+    width: min(520px, 94vw); max-height: 86vh; display: flex; flex-direction: column; padding: 18px 20px 16px;
+  }
+  .picker-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .picker-head h3 { margin: 0; font-size: 17px; }
+  .picker-close { border: 0; background: none; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer; }
+  .picker-tip { margin: 6px 0 8px; font-size: 12.5px; color: var(--muted); }
+  .picker-list { overflow: auto; border-top: 1px solid var(--line); }
+  .picker-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 2px; border-bottom: 1px solid var(--line); }
+  .picker-row .name { display: flex; flex-direction: column; gap: 1px; font-size: 13.5px; }
+  .picker-row .name b { color: var(--green); font-weight: 600; }
+  .picker-row .avail { font-size: 11.5px; color: var(--muted); }
+  .picker-row input {
+    width: 64px; padding: 6px 8px; font: inherit; font-size: 14px; text-align: center;
+    border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink);
+  }
+  .picker-row input:focus { outline: none; border-color: #c9bfa9; box-shadow: 0 0 0 3px rgba(201,191,169,.22); }
+  .picker-foot { display: flex; align-items: center; gap: 10px; padding-top: 12px; }
+  .picker-foot #dlTotal { margin-right: auto; font-size: 13px; color: var(--muted); }
+  .picker-cancel {
+    border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px;
+    padding: 8px 16px; font: inherit; font-size: 13.5px; cursor: pointer;
+  }
+  .action:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 
   .sheet { align-items: flex-end; padding: 0; }
   .sheet-inner {
@@ -267,8 +298,10 @@
     <div class="chips" id="chips"></div>
     <div class="chips subchips" id="subchips" hidden></div>
     <div class="fl-row">
-      <button class="action" id="dlAll" type="button" hidden>下载同类练习（Word · 全部题型）</button>
+      <button class="action ghost" id="newUpload" type="button" hidden>上传新题</button>
+      <button class="action" id="dlAll" type="button" hidden>下载同类练习（Word · 自选题数）</button>
     </div>
+    <p class="pending" id="pendingNote" hidden></p>
   </section>
 
   <main class="cards" id="cards"></main>
@@ -283,6 +316,22 @@
   <div class="modal-inner">
     <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
     <img id="modalImg" alt="题目图片">
+  </div>
+</div>
+
+<div class="modal" id="dlModal" aria-hidden="true">
+  <div class="picker" role="dialog" aria-modal="true" aria-labelledby="dlTitle">
+    <div class="picker-head">
+      <h3 id="dlTitle">下载同类练习</h3>
+      <button class="picker-close" id="dlClose" type="button" aria-label="关闭">×</button>
+    </div>
+    <p class="picker-tip">按题型设置道数；超过现成题目数量时按现成数量出题。</p>
+    <div class="picker-list" id="dlList"></div>
+    <div class="picker-foot">
+      <span id="dlTotal"></span>
+      <button class="picker-cancel" id="dlCancel" type="button">取消</button>
+      <button class="action" id="dlConfirm" type="button">生成 Word</button>
+    </div>
   </div>
 </div>
 
@@ -325,6 +374,7 @@
   </div>
 </div>
 
+<input id="uploadFile" type="file" accept="image/*,.pdf,.doc,.docx" multiple hidden>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="config.js"></script>
@@ -336,10 +386,15 @@
   const SB_KEY = String(CFG.supabaseAnonKey || '');
   const hasCloud = !!(SB_URL && SB_KEY);
   const raw = window.PROBLEMS || { problems: [], types: [] };
-  const state = { type: 'all', subtype: 'all', query: '', showDemo: false };
+  const state = { type: 'all', subtype: 'all', query: '', showDemo: false, newOnly: false };
   let serverLogs = [];
+  let remoteProblems = [];
+  let notebookUploads = [];
+  let uploadsReady = false;
   let all = [];
   let real = [];
+  let newItems = [];
+  let learnable = [];
   let demoCount = 0;
   let logKey = '';
 
@@ -373,19 +428,24 @@
       accuracy: total ? Math.round(correct / total * 100) : null,
       tags: Array.isArray(p.tags) ? p.tags : [],
       subtype: p.subtype || '',
+      isNew: !!(p.isNew || p.status === 'new'),
+      clean_image: p.clean_image || p.image_url || '',
       origin_image: ''
     });
   }
 
   function buildAll() {
-    all = (raw.problems || []).map(p => {
+    const base = (raw.problems || []).concat(remoteProblems);
+    all = base.map(p => {
       const extra = serverLogs
         .filter(l => l.problem_id === p.id)
         .map(l => ({ date: l.practice_date, total: l.total, correct: l.correct, note: l.note || '' }));
       return normalize(Object.assign({}, p, { practice_log: (p.practice_log || []).concat(extra) }));
     });
-    real = all.filter(p => !p.demo);
-    demoCount = all.length - real.length;
+    learnable = all.filter(p => !p.demo);
+    real = learnable.filter(p => !p.isNew);
+    newItems = learnable.filter(p => p.isNew);
+    demoCount = all.length - learnable.length;
   }
 
   function fmtAccuracy(a) {
@@ -465,46 +525,113 @@ ${key}
 </body></html>`;
   }
 
-  function downloadAllTypesDoc() {
-    const groups = new Map();
-    real.forEach(p => {
+  function buildTypeGroups() {
+    const map = new Map();
+    learnable.forEach(p => {
       if (!p.type) return;
-      const key = p.type + '|' + (p.subtype || '');
-      if (!groups.has(key)) groups.set(key, { type: p.type, subtype: p.subtype || '', list: [] });
-      groups.get(key).list.push(p);
-    });
-
-    const sections = [];
-    let covered = 0;
-    [...groups.values()]
-      .sort((a, b) => b.list.length - a.list.length)
-      .forEach(g => {
-        const seen = new Set();
-        const items = [];
-        g.list.forEach(p => {
-          let taken = 0;
-          p.similar.forEach(s => {
-            if (taken >= 3) return;
-            const k = String(s.q || '').trim();
-            if (!k || seen.has(k)) return;
-            seen.add(k);
-            items.push({ q: s.q, a: s.a });
-            taken++;
-          });
-          if (taken) covered++;
-        });
-        if (items.length) {
-          sections.push({ heading: g.subtype ? `${g.type} · ${g.subtype}` : g.type, items });
-        }
+      if (!map.has(p.type)) {
+        map.set(p.type, { type: p.type, problems: [], subtypes: new Map(), seen: new Set(), available: 0 });
+      }
+      const g = map.get(p.type);
+      g.problems.push(p);
+      const sub = p.subtype || '';
+      if (!g.subtypes.has(sub)) g.subtypes.set(sub, { subtype: sub, items: [] });
+      const bucket = g.subtypes.get(sub);
+      p.similar.forEach(s => {
+        const q = String(s.q || '').trim();
+        if (!q || g.seen.has(q)) return;
+        g.seen.add(q);
+        bucket.items.push({ q: s.q, a: s.a, pid: p.id || '' });
+        g.available++;
       });
+    });
+    return [...map.values()]
+      .filter(g => g.available > 0)
+      .sort((a, b) => b.problems.length - a.problems.length || a.type.localeCompare(b.type, 'zh'));
+  }
 
+  function pickGroupItems(g, count) {
+    const buckets = [...g.subtypes.values()].filter(b => b.items.length);
+    const taken = new Map(buckets.map(b => [b, []]));
+    let left = Math.min(count, g.available);
+    while (left > 0) {
+      let moved = false;
+      for (const b of buckets) {
+        if (left <= 0) break;
+        const list = taken.get(b);
+        if (list.length >= b.items.length) continue;
+        list.push(b.items[list.length]);
+        left--;
+        moved = true;
+      }
+      if (!moved) break;
+    }
+    return buckets
+      .map(b => ({
+        heading: g.type + (b.subtype ? ' · ' + b.subtype : ''),
+        items: taken.get(b)
+      }))
+      .filter(sec => sec.items.length);
+  }
+
+  let dlGroups = [];
+  let dlCounts = new Map();
+
+  function openDlDialog() {
+    dlGroups = buildTypeGroups();
+    if (!dlGroups.length) return;
+    dlCounts = new Map(dlGroups.map(g => [g.type, Math.min(3, g.available)]));
+    $('#dlList').innerHTML = dlGroups.map(g => {
+      const subs = [...g.subtypes.values()]
+        .filter(b => b.items.length)
+        .map(b => b.subtype || '未细分')
+        .join(' / ');
+      return `<label class="picker-row">
+        <span class="name"><b>${esc(g.type)}</b><span class="avail">现成 ${g.available} 道 · ${esc(subs)}</span></span>
+        <input type="number" data-type="${esc(g.type)}" min="0" max="${g.available}" step="1" value="${dlCounts.get(g.type)}" inputmode="numeric" aria-label="${esc(g.type)} 出几道">
+      </label>`;
+    }).join('');
+    updateDlTotal();
+    $('#dlModal').classList.add('open');
+    $('#dlModal').setAttribute('aria-hidden', 'false');
+    setTimeout(() => $('#dlList input')?.focus(), 100);
+  }
+
+  function updateDlTotal() {
+    const total = dlGroups.reduce((s, g) => s + (dlCounts.get(g.type) || 0), 0);
+    $('#dlTotal').textContent = `共 ${total} 题`;
+    $('#dlConfirm').disabled = total === 0;
+  }
+
+  function closeDlDialog() {
+    document.activeElement?.blur();
+    $('#dlModal').classList.remove('open');
+    $('#dlModal').setAttribute('aria-hidden', 'true');
+  }
+
+  function downloadSelectedTypesDoc() {
+    const sections = [];
+    const covered = new Set();
+    const types = new Set();
+    dlGroups.forEach(g => {
+      const n = dlCounts.get(g.type) || 0;
+      if (!n) return;
+      const picked = pickGroupItems(g, n);
+      if (!picked.length) return;
+      types.add(g.type);
+      picked.forEach(sec => {
+        sec.items.forEach(it => { if (it.pid) covered.add(it.pid); });
+        sections.push(sec);
+      });
+    });
     if (!sections.length) return;
     const count = sections.reduce((s, x) => s + x.items.length, 0);
-    const meta = `覆盖 ${covered} 道错题、${sections.length} 个细分题型 ｜ 每道错题 1–3 题 ｜ 共 ${count} 题`;
+    const meta = `覆盖 ${covered.size} 道错题、${types.size} 个题型 ｜ 按题型指定题数 ｜ 共 ${count} 题`;
     downloadWord(
-      safeName(`同类练习_全部题型_${localDate()}.doc`),
-      buildWordDoc({ title: '二年级数学 · 同类练习（全部题型）', meta, sections })
+      safeName(`同类练习_按题型_${localDate()}.doc`),
+      buildWordDoc({ title: '二年级数学 · 同类练习（按题型）', meta, sections })
     );
+    closeDlDialog();
   }
 
   function downloadProblemDoc(id) {
@@ -524,40 +651,44 @@ ${key}
   }
 
   function renderStats() {
-    const types = new Set(real.map(p => (p.type ? (p.subtype ? `${p.type}·${p.subtype}` : p.type) : '')).filter(Boolean));
-    const sessions = real.reduce((s, p) => s + p.sessions, 0);
+    const types = new Set(learnable.map(p => (p.type ? (p.subtype ? `${p.type}·${p.subtype}` : p.type) : '')).filter(Boolean));
+    const sessions = learnable.reduce((s, p) => s + p.sessions, 0);
     let answered = 0, correct = 0;
-    real.forEach(p => { answered += p.answered; correct += p.correct; });
+    learnable.forEach(p => { answered += p.answered; correct += p.correct; });
     const acc = answered ? Math.round(correct / answered * 100) + '<small>%</small>' : '—';
 
     $('#stats').innerHTML = [
       ['错题总数', real.length + '<small>道</small>'],
+      ['待练新题', newItems.filter(p => p.sessions === 0).length + '<small>道</small>'],
       ['覆盖题型', types.size + '<small>类</small>'],
       ['累计练习', sessions + '<small>次</small>'],
       ['平均正确率', acc]
     ].map(([k, v]) => {
-      const clickable = k === '覆盖题型' && real.length > 0;
+      const clickable = k === '覆盖题型' && learnable.length > 0;
       return `<div class="stat${clickable ? ' clickable' : ''}"${clickable ? ' data-stat="types" role="button" tabindex="0" title="点击查看各细分题型" aria-expanded="false"' : ''}>
         <div class="k">${k}</div><div class="v">${v}</div></div>`;
     }).join('');
 
     $('#updated').textContent = raw.updated ? '错题数据更新于 ' + raw.updated : '';
-    $('#statnote').classList.toggle('on', real.length === 0 && demoCount > 0);
+    $('#statnote').classList.toggle('on', learnable.length === 0 && demoCount > 0);
   }
 
   function renderChips() {
     const pool = all.filter(p => !p.demo || state.showDemo);
     const counts = new Map();
     pool.forEach(p => { if (p.type) counts.set(p.type, (counts.get(p.type) || 0) + 1); });
+    const newCount = pool.filter(p => p.isNew).length;
     const items = [['all', '全部', pool.length]];
+    if (newCount) items.push(['__new', '新题', newCount]);
     [...counts.entries()].sort((a, b) => b[1] - a[1]).forEach(([t, n]) => items.push([t, t, n]));
 
-    $('#chips').innerHTML = items.map(([val, label, n]) =>
-      `<button class="chip ${state.type === val ? 'on' : ''}" data-type="${esc(val)}">${esc(label)}<span class="n">${n}</span></button>`
-    ).join('');
+    $('#chips').innerHTML = items.map(([val, label, n]) => {
+      const on = val === '__new' ? state.newOnly : (!state.newOnly && state.type === val);
+      return `<button class="chip ${on ? 'on' : ''}" data-type="${esc(val)}">${esc(label)}<span class="n">${n}</span></button>`;
+    }).join('');
 
     const subHost = $('#subchips');
-    const typePool = state.type === 'all' ? [] : pool.filter(p => p.type === state.type);
+    const typePool = state.newOnly || state.type === 'all' ? [] : pool.filter(p => p.type === state.type);
     const subs = new Map();
     typePool.forEach(p => { if (p.subtype) subs.set(p.subtype, (subs.get(p.subtype) || 0) + 1); });
     if (!subs.size) {
@@ -596,8 +727,12 @@ ${key}
   function renderCards() {
     const q = state.query.trim().toLowerCase();
     let list = all.filter(p => state.showDemo || !p.demo);
-    if (state.type !== 'all') list = list.filter(p => p.type === state.type);
-    if (state.subtype !== 'all') list = list.filter(p => p.subtype === state.subtype);
+    if (state.newOnly) {
+      list = list.filter(p => p.isNew);
+    } else {
+      if (state.type !== 'all') list = list.filter(p => p.type === state.type);
+      if (state.subtype !== 'all') list = list.filter(p => p.subtype === state.subtype);
+    }
     if (q) {
       list = list.filter(p => [p.problem_text, p.wrong_answer, p.correct_answer, p.error_reason, p.type, p.subtype, ...(p.tags || [])]
         .join(' ').toLowerCase().includes(q));
@@ -606,7 +741,7 @@ ${key}
 
     const host = $('#cards');
     if (!list.length) {
-      host.innerHTML = real.length === 0 ? welcome() : `
+      host.innerHTML = learnable.length === 0 ? welcome() : `
         <div class="empty">
           <h3>没有符合条件的错题</h3>
           <p>换个题型或搜索词试试。</p>
@@ -662,14 +797,17 @@ ${key}
             ${p.subtype ? `<span class="badge sub">${esc(p.subtype)}</span>` : ''}
             <span>${esc(p.date || '')}</span>
             ${p.id ? `<span>${esc(p.id)}</span>` : ''}
+            ${p.isNew ? '<span class="badge new">新题</span>' : ''}
             ${p.demo ? '<span class="badge demo">示例</span>' : ''}
           </div>
           <p class="q">${esc(p.problem_text || '')}</p>
-          <div class="answers">
+          ${p.isNew
+            ? `<div class="answers"><div class="ans new"><label>状态</label><b>${p.sessions ? `新题 · 已练 ${p.sessions} 次` : '新题 · 还没做过'}</b></div></div>`
+            : `<div class="answers">
             <div class="ans wrong"><label>错答</label><b>${esc(p.wrong_answer || '—')}</b></div>
             <div class="ans right"><label>正答</label><b>${esc(p.correct_answer || '—')}</b></div>
-          </div>
-          <p class="reason">${esc(p.error_reason || '未填写')}</p>
+          </div>`}
+          <p class="reason">${esc(p.error_reason || (p.isNew ? '先自己试做，做完再登记结果。' : '未填写'))}</p>
           <div class="foot">
             <span>练习 ${p.sessions} 次</span>
             <span>正确率 <span class="acc ${acc.cls}">${acc.text}</span></span>
@@ -721,10 +859,10 @@ ${key}
       showToast('云端记录尚未配置，暂时不能登记');
       return;
     }
-    const list = real;
+    const list = learnable;
     const sel = $('#logProblem');
     if (!list.length) {
-      showToast('还没有真实错题，无法登记练习');
+      showToast('还没有可登记的题目');
       return;
     }
     sel.innerHTML = list.map(p =>
@@ -797,6 +935,148 @@ ${key}
     }
   }
 
+  const UPLOAD_BUCKET = 'notebook-files';
+  const MAX_UPLOAD = 10 * 1024 * 1024;
+  const MIME_BY_EXT = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+    heic: 'image/heic', heif: 'image/heif',
+    pdf: 'application/pdf', doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  };
+
+  function extOf(name) {
+    const m = String(name || '').toLowerCase().match(/\.([a-z0-9]{1,8})$/);
+    return m ? m[1] : '';
+  }
+
+  function mimeFor(file) {
+    return MIME_BY_EXT[extOf(file.name)] || file.type || 'application/octet-stream';
+  }
+
+  async function uploadOne(file) {
+    const key = uuid();
+    const ext = extOf(file.name) || 'bin';
+    const path = key + '.' + ext;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 60000);
+    let res;
+    try {
+      res = await fetch(`${SB_URL}/storage/v1/object/${UPLOAD_BUCKET}/${encodeURIComponent(path)}`, {
+        method: 'POST',
+        headers: {
+          apikey: SB_KEY,
+          Authorization: 'Bearer ' + SB_KEY,
+          'content-type': mimeFor(file),
+          'x-upsert': 'false'
+        },
+        body: file,
+        signal: ctrl.signal
+      });
+    } catch (e) {
+      throw Object.assign(new Error('upload_failed'), { code: 'upload_failed' });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (!res.ok) throw Object.assign(new Error('upload_failed'), { code: 'upload_' + res.status });
+
+    const r = await sbFetch('/rest/v1/notebook_uploads', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({
+        client_key: key,
+        object_path: path,
+        file_name: String(file.name || '').slice(0, 120),
+        mime_type: mimeFor(file)
+      })
+    });
+    if (!r.ok) throw Object.assign(new Error('record_failed'), { code: (r.body && (r.body.code || r.body.message)) || r.status });
+    return key;
+  }
+
+  async function handleFiles(files) {
+    if (!hasCloud) { showToast('云端尚未配置，暂时不能上传'); return; }
+    const list = Array.from(files || []);
+    if (!list.length) return;
+    const note = $('#pendingNote');
+    let done = 0, skipped = 0;
+    let i = 0;
+    for (const file of list) {
+      i += 1;
+      if (file.size > MAX_UPLOAD) { skipped += 1; continue; }
+      note.hidden = false;
+      note.textContent = `正在上传 ${i}/${list.length}：${String(file.name || '').slice(0, 18)}`;
+      try {
+        await uploadOne(file);
+        done += 1;
+      } catch (e) {
+        skipped += 1;
+      }
+    }
+    note.hidden = true;
+    await loadNewContent();
+    if (done) {
+      showToast(skipped
+        ? `已上传 ${done} 份，${skipped} 份没传上；跟我说「同步新题」`
+        : `已上传 ${done} 份，跟我说「同步新题」`);
+    } else {
+      showToast('没有文件上传成功，请检查格式或网络');
+    }
+  }
+
+  let newContentSeq = 0;
+
+  async function loadNewContent() {
+    if (!hasCloud) { renderPending(); return; }
+    const seq = ++newContentSeq;
+    try {
+      const [up, pr] = await Promise.all([
+        sbFetch(`/rest/v1/notebook_uploads?select=client_key,object_path,file_name,mime_type,created_at&order=created_at.desc&limit=200`),
+        sbFetch(`/rest/v1/notebook_problems?select=client_key,source_key,payload,created_at&order=created_at.asc&limit=500`)
+      ]);
+      if (seq !== newContentSeq) return;
+      if (!up.ok && !pr.ok) throw new Error('not_ready');
+      notebookUploads = up.ok && Array.isArray(up.body) ? up.body : [];
+      const rows = pr.ok && Array.isArray(pr.body) ? pr.body : [];
+      remoteProblems = rows
+        .filter(r => r && r.payload && r.payload.id)
+        .map(r => Object.assign({}, r.payload, { isNew: true, source_key: r.source_key || '' }));
+      uploadsReady = true;
+      buildAll();
+      if (real.length && state.showDemo) {
+        state.showDemo = false;
+        $('#showDemo').checked = false;
+      }
+      renderStats(); renderChips(); renderCards();
+      if (learnable.length) {
+        const btn = $('#dlAll');
+        btn.hidden = false;
+        btn.onclick = openDlDialog;
+      }
+    } catch (e) {
+      if (seq !== newContentSeq) return;
+      uploadsReady = false;
+    }
+    renderPending();
+  }
+
+  function renderPending() {
+    const btn = $('#newUpload');
+    const note = $('#pendingNote');
+    if (btn) btn.hidden = !(hasCloud && uploadsReady);
+    if (!note) return;
+    if (!hasCloud) { note.hidden = true; return; }
+    if (!uploadsReady) {
+      note.hidden = false;
+      note.textContent = '新题上传暂时不可用：请确认已在 Supabase 执行 supabase/uploads.sql，并检查网络。';
+      return;
+    }
+    const processed = new Set(remoteProblems.map(p => p.source_key).filter(Boolean));
+    const pending = notebookUploads.filter(u => u && !processed.has(u.client_key)).length;
+    if (!pending) { note.hidden = true; return; }
+    note.hidden = false;
+    note.textContent = `有 ${pending} 份新题待整理：跟我说「同步新题」，整理后会出现在下面。`;
+  }
+
   async function submitLog(e) {
     e.preventDefault();
     if (!hasCloud) {
@@ -863,7 +1143,9 @@ ${key}
   $('#chips').addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip) return;
-    state.type = chip.dataset.type;
+    const val = chip.dataset.type;
+    state.newOnly = val === '__new';
+    state.type = state.newOnly ? 'all' : val;
     state.subtype = 'all';
     renderChips();
     renderCards();
@@ -909,6 +1191,7 @@ ${key}
     }
     const row = e.target.closest('.typerow');
     if (!row) return;
+    state.newOnly = false;
     state.type = row.dataset.type || 'all';
     state.subtype = row.dataset.subtype || 'all';
     renderChips();
@@ -946,12 +1229,35 @@ ${key}
   $('#logForm').addEventListener('submit', submitLog);
   $('#logModal').addEventListener('click', e => { if (e.target === $('#logModal')) closeLog(); });
 
+  $('#newUpload').addEventListener('click', () => $('#uploadFile').click());
+  $('#uploadFile').addEventListener('change', e => {
+    const input = e.target;
+    handleFiles(input.files).finally(() => { input.value = ''; });
+  });
+
   $('#modalClose').addEventListener('click', closeModal);
   $('#modal').addEventListener('click', e => { if (e.target === $('#modal')) closeModal(); });
+  $('#dlClose').addEventListener('click', closeDlDialog);
+  $('#dlCancel').addEventListener('click', closeDlDialog);
+  $('#dlModal').addEventListener('click', e => { if (e.target === $('#dlModal')) closeDlDialog(); });
+  $('#dlConfirm').addEventListener('click', downloadSelectedTypesDoc);
+  $('#dlList').addEventListener('input', e => {
+    const input = e.target.closest('input[data-type]');
+    if (!input) return;
+    const g = dlGroups.find(x => x.type === input.dataset.type);
+    if (!g) return;
+    let n = Math.floor(Number(input.value));
+    if (!Number.isFinite(n) || n < 0) n = 0;
+    if (n > g.available) n = g.available;
+    if (String(n) !== input.value) input.value = n;
+    dlCounts.set(g.type, n);
+    updateDlTotal();
+  });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     closeModal();
     closeLog();
+    closeDlDialog();
   });
 
   const demoWrap = $('#demoWrap');
@@ -959,14 +1265,14 @@ ${key}
 
   function refreshStatic() {
     buildAll();
-    state.showDemo = real.length === 0;
+    state.showDemo = real.length === 0 && newItems.length === 0;
     if (demoCount > 0) {
       demoWrap.hidden = false;
       $('#showDemo').checked = state.showDemo;
     }
-    if (real.length) {
+    if (learnable.length) {
       dlAll.hidden = false;
-      dlAll.onclick = downloadAllTypesDoc;
+      dlAll.onclick = openDlDialog;
     }
     renderStats();
     renderChips();
@@ -975,6 +1281,7 @@ ${key}
 
   refreshStatic();
   loadLogs();
+  loadNewContent();
 })();
 </script>
 </body>
