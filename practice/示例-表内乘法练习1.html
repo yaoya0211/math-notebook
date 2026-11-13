@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>表内乘法 · 举一反三练习（示例）</title>
+<style>
+  @page { size: A4; margin: 14mm 16mm 12mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    color: #111; background: #fff; line-height: 1.7;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .sheet { max-width: 190mm; margin: 0 auto; padding: 8mm 4mm; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #111; padding-bottom: 3mm; }
+  h1 { font-size: 19pt; margin: 0; letter-spacing: 1px; }
+  .sub { font-size: 9.5pt; color: #555; margin-top: 1mm; }
+  .meta { font-size: 10pt; text-align: right; }
+  .meta span { display: inline-block; border-bottom: 1px solid #333; min-width: 30mm; padding: 0 2mm; text-align: center; }
+  .hint { font-size: 9pt; color: #666; margin: 3mm 0 5mm; display: flex; justify-content: space-between; }
+  ol.questions { list-style: none; margin: 0; padding: 0; counter-reset: q; }
+  ol.questions > li {
+    counter-increment: q; position: relative; padding: 0 0 0 9mm;
+    margin: 0 0 5.5mm; min-height: 14mm; break-inside: avoid; font-size: 12.5pt;
+  }
+  ol.questions > li::before {
+    content: counter(q) "."; position: absolute; left: 0; top: 0; width: 7mm;
+    font-weight: 600; font-size: 12pt;
+  }
+  .blank { display: inline-block; min-width: 26mm; border-bottom: 1px solid #333; height: 1.35em; vertical-align: -0.25em; }
+  .blank.short { min-width: 14mm; }
+  .space { height: 9mm; }
+  .worklines > div { border-bottom: 1px solid #bbb; height: 9mm; }
+  .worklines.answer > div { border-bottom: 0; height: 8mm; }
+  .answerlabel { font-weight: 600; }
+  .answers-page { break-before: page; page-break-before: always; }
+  .answers-page h2 { font-size: 15pt; border-bottom: 1px solid #111; padding-bottom: 2mm; margin: 0 0 4mm; }
+  .key { font-size: 11pt; }
+  .key li { margin-bottom: 2.5mm; line-height: 1.8; }
+  .key b { font-weight: 600; }
+  .key .a { color: #0a5a47; }
+  footer { margin-top: 8mm; font-size: 8.5pt; color: #777; display: flex; justify-content: space-between; border-top: 1px dashed #ccc; padding-top: 2.5mm; }
+  .print-btn {
+    position: fixed; right: 18px; bottom: 18px; padding: 10px 18px; border-radius: 999px;
+    border: 0; background: #2f6f5e; color: #fff; font: inherit; font-size: 14px; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  @media print {
+    .print-btn { display: none; }
+    .sheet { max-width: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <div>
+      <h1>二年级数学 · 举一反三练习</h1>
+      <div class="sub">题型：表内乘法 ｜ 对应错题：DEMO-01 ｜ 共 8 题</div>
+    </div>
+    <div class="meta">姓名 <span>&nbsp;</span>　日期 <span>&nbsp;</span></div>
+  </header>
+
+  <div class="hint">
+    <span>要求：书写工整，先想“几个几”，再列式。</span>
+    <span>建议用时：15 分钟</span>
+  </div>
+
+  <ol class="questions">
+    <li>把 5+5+5+5 改写成乘法算式：<span class="blank">&nbsp;</span></li>
+    <li>把 3+3+3+3+3+3 改写成乘法算式：<span class="blank">&nbsp;</span></li>
+    <li>6+6+6+6 = <span class="blank short">&nbsp;</span> × <span class="blank short">&nbsp;</span> = <span class="blank short">&nbsp;</span></li>
+    <li>7+7+7 是 <span class="blank short">&nbsp;</span> 个 7 相加，用乘法表示是 <span class="blank">&nbsp;</span>。</li>
+    <li>比较大小（填 &gt;、&lt; 或 =）：3×5 <span style="display:inline-block;min-width:8mm;text-align:center;">○</span> 4×4</li>
+    <li>6×4 可以表示 6 个 4 相加，也可以表示 <span class="blank short">&nbsp;</span> 个 <span class="blank short">&nbsp;</span> 相加。</li>
+    <li>4×（<span class="blank short" style="min-width:12mm;">&nbsp;</span>）= 20</li>
+    <li>
+      一盒鸡蛋有 6 个，3 盒一共有多少个？用乘法算式表示。
+      <div class="space"></div>
+      <div class="worklines">
+        <div></div>
+        <div class="answerlabel">答：<span style="display:inline-block;border-bottom:1px solid #bbb;min-width:80mm;">&nbsp;</span></div>
+      </div>
+    </li>
+  </ol>
+
+  <footer>
+    <span>举一反三 · 表内乘法</span>
+    <span>做完后拍照回传，自动登记练习记录</span>
+  </footer>
+</div>
+
+<div class="sheet answers-page">
+  <h2>参考答案（家长页）</h2>
+  <ol class="key">
+    <li><b>5×4</b> 或 4×5</li>
+    <li><b>3×6</b> 或 6×3</li>
+    <li>6 × 4 = <b>24</b>（或 4 × 6 = 24）</li>
+    <li>3 个 7；<b>7×3</b>（或 3×7）</li>
+    <li><b>&lt;</b>（3×5=15，4×4=16）</li>
+    <li><b>4</b> 个 <b>6</b> 相加</li>
+    <li><b>5</b>（4×5=20）</li>
+    <li><b>6×3=18（个）</b>；答：一共有 18 个鸡蛋。</li>
+  </ol>
+  <footer>
+    <span>错题本 · 示例练习卷</span>
+    <span>打印建议：A4、纵向、100% 缩放</span>
+  </footer>
+</div>
+
+<button class="print-btn" type="button" onclick="window.print()">打印 / 存为 PDF</button>
+</body>
+</html>
